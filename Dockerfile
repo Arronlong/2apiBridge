@@ -63,8 +63,7 @@ RUN cd 2apiBridge && \
     .venv/bin/python -m pip install -r requirements.txt
 
 # 构建时运行fetch
-RUN cd 2apiBridge/Turnstile-Solver && \
-    ../.venv/bin/python -m camoufox fetch
+RUN .venv/bin/python -m camoufox fetch
 
 # 运行时配置
 WORKDIR /home/appuser/2apiBridge
