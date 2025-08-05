@@ -1,0 +1,12 @@
+[project]
+name = "2apiBridge"
+version = "0.1.0"
+description = "Bridge for xxAI website token acquisition"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "camoufox",
+    "fastapi>=0.116.1",
+    "python-dotenv",      # 官方包
+    "uvicorn>=0.35.0",
+]
