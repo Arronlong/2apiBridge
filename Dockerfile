@@ -50,7 +50,7 @@ WORKDIR /home/appuser
 
 # 克隆项目
 # 增加ADD这行，防止git clone 被cached
-ADD https://api.github.com/repos/Arronlong/2apiBridge/git/refs/heads/master /tmp/always-fresh.json
+ADD https://api.github.com/repos/Arronlong/2apiBridge/git/refs/heads/main /tmp/always-fresh.json
 # 添加了/get_token接口，添加了流式响应支持，增加VALID_API_KEY。
 RUN git clone --depth 1 https://github.com/Arronlong/2apiBridge.git
 
