@@ -60,7 +60,7 @@ RUN cd 2apiBridge && \
     /usr/local/bin/python3.12 -m venv .venv && \
     .venv/bin/python -m pip install --upgrade pip wheel setuptools && \
     .venv/bin/python -m pip install -e . && \
-    .venv/bin/python -m pip install -r Turnstile-Solver/requirements.txt
+    .venv/bin/python -m pip install -r requirements.txt
 
 # 构建时运行fetch
 RUN cd 2apiBridge/Turnstile-Solver && \
