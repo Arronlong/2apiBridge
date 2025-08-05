@@ -71,8 +71,8 @@ WORKDIR /home/appuser/2apiBridge
 
 # 生成 .env，供 python-dotenv 读取
 RUN echo "VALID_API_KEY=${VALID_API_KEY}" > .env
-RUN echo "VALID_API_KEY=${VALID_API_KEY}" >> .env
-RUN echo "VALID_API_KEY=${VALID_API_KEY}" >.> .env
+RUN echo "PROMPTLAYER_EMAIL=${PROMPTLAYER_EMAIL}" >> .env
+RUN echo "PROMPTLAYER_PASSWORD=${PROMPTLAYER_PASSWORD}" >.> .env
 
 # 启动脚本
 ENTRYPOINT [".venv/bin/python", "2api_bridge.py"]
