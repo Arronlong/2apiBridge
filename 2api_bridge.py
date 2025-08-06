@@ -82,7 +82,6 @@ async def get_promptlayer_token() -> str | None:
         
         # 点击输入框聚焦
         await page.click('input[name="email"]', force=True)
-        
         # 模拟真实键盘输入（含输入延迟）
         await page.type(
             'input[name="email"]', 
@@ -98,6 +97,14 @@ async def get_promptlayer_token() -> str | None:
             delay=100  # 每个字符输入间隔100ms（模拟真实输入）
         )
         
+        # 点击输入框聚焦
+        await page.click('input[name="email"]', force=True)
+        await page.click('input[name="password"]', force=True)
+        # 提交登录表单
+        await page.click('button[type="submit"]')  # 登录按钮
+        
+        await asyncio.sleep(3)  # 预留响应时间
+        
         email = await page.evaluate(
             """(email) => {
                 //document.querySelector("#email") && (document.querySelector("#email").value=email)
@@ -112,11 +119,8 @@ async def get_promptlayer_token() -> str | None:
             }""",
             PROMPTLAYER_PASSWORD
         )
-        print("email=", email,PROMPTLAYER_EMAIL, ",password=", password, PROMPTLAYER_PASSWORD)
+        print("email=", email, ",password=", password)
         
-        # 填写登录表单（根据实际页面元素调整选择器）
-        await page.fill('input[name="email"]', PROMPTLAYER_EMAIL)  # 邮箱输入框
-        await page.fill('input[name="password"]', PROMPTLAYER_PASSWORD)  # 密码输入框
         
         await page.evaluate('() => document.querySelector("button[type=submit]")?.click()')
         await asyncio.sleep(3)  # 预留响应时间
