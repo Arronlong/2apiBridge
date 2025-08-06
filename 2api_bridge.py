@@ -107,20 +107,23 @@ async def get_promptlayer_token() -> str | None:
         
         email = await page.evaluate(
             """(email) => {
-                //document.querySelector("#email") && (document.querySelector("#email").value=email)
+                document.querySelector("#email") && (document.querySelector("#email").value=email)
                 return document.querySelector("#email")?.value
             }""",
             PROMPTLAYER_EMAIL
         )
         password = await page.evaluate(
             """(password) => {
-                //document.querySelector("#password") && (document.querySelector("#password").value=password)
+                document.querySelector("#password") && (document.querySelector("#password").value=password)
                 return document.querySelector("#password")?.value
             }""",
             PROMPTLAYER_PASSWORD
         )
         print("email=", email, ",password=", password)
         
+        # 点击输入框聚焦
+        await page.click('input[name="email"]', force=True)
+        await page.click('input[name="password"]', force=True)
         
         await page.evaluate('() => document.querySelector("button[type=submit]")?.click()')
         await asyncio.sleep(3)  # 预留响应时间
