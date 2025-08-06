@@ -100,7 +100,6 @@ async def get_promptlayer_token() -> str | None:
         except TimeoutError:
             print("当前 URL:", page.url)
             html = await page.content()
-            print("【登录失败】当前 URL:", url)
             print("【页面源码】")
             # 只打印前 5 万字符，防止刷屏
             print(textwrap.shorten(html, width=50_000, placeholder="..."))
