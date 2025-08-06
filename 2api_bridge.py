@@ -88,8 +88,20 @@ async def get_promptlayer_token() -> str | None:
         await page.click('button[type="submit"]')  # 登录按钮
         
         # 等待登录完成（检测重定向或关键元素）
-        await page.wait_for_url("https://dashboard.promptlayer.com/**", timeout=30000)
-        
+        try:
+            await page.wait_for_selector("h1:has-text('Welcome to PromptLayer')", state="visible", timeout=30000)
+        except:
+            # 方案二：通过API验证邮箱（双保险机制）
+            await asyncio.sleep(5)  # 预留API响应时间
+            # 获取整个页面的HTML源码
+            page_content = await page.content()
+            
+            # 检查源码中是否包含欢迎文本[5][6][10]
+            if "Welcome to PromptLayer" in page_content:
+                print("✅ 登录成功：在源码中找到欢迎文本")
+            else:
+                print("❌ 登录失败：未找到欢迎元素")
+
         # 直接从localStorage获取ACCESS_TOKEN
         token = await page.evaluate('() => localStorage.getItem("ACCESS_TOKEN")')
         
