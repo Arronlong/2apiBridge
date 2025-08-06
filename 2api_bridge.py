@@ -77,8 +77,8 @@ async def get_promptlayer_token() -> str | None:
         await page.goto("https://dashboard.promptlayer.com/login", timeout=30000)
 
         # 显式等待元素可见（增加超时容错）
-        await page.wait_for_selector("input[name='email']", state="visible", timeout=5000)
-        await page.wait_for_selector("input[name='password']", state="visible", timeout=5000)
+        await page.wait_for_selector("input[name='email']", state="visible", timeout=15000)
+        await page.wait_for_selector("input[name='password']", state="visible", timeout=15000)
 
         # 填写登录表单（根据实际页面元素调整选择器）
         await page.fill('input[name="email"]', PROMPTLAYER_EMAIL)  # 邮箱输入框
