@@ -1,4 +1,0 @@
-camoufox
-fastapi>=0.116.1
-python-dotenv
-uvicorn>=0.35.0
