@@ -84,7 +84,7 @@ async def get_promptlayer_token() -> str | None:
         await page.click('button[type="submit"]')
 
         # 4. 等待登录成功
-        await page.wait_for_url("**/workspace/**/home", timeout=30000)
+        await page.locator('h1:text("Welcome to PromptLayer")').wait_for(timeout=60000)
 
         # 5. 从 localStorage 拿 ACCESS_TOKEN
         token = await page.evaluate("""() => {
