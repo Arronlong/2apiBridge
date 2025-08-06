@@ -76,26 +76,26 @@ async def get_promptlayer_token() -> str | None:
         page = await browser.new_page()
         await page.goto("https://dashboard.promptlayer.com/login", timeout=30000)
 
-        # 显式等待元素可见（增加超时容错）
-        await page.wait_for_selector("input[name='email']", state="visible", timeout=15000)
-        await page.wait_for_selector("input[name='password']", state="visible", timeout=15000)
+        # # 显式等待元素可见（增加超时容错）
+        # await page.wait_for_selector("input[name='email']", state="visible", timeout=15000)
+        # await page.wait_for_selector("input[name='password']", state="visible", timeout=15000)
 
         # 填写登录表单（根据实际页面元素调整选择器）
-        await page.fill('input[name="email"]', PROMPTLAYER_EMAIL)  # 邮箱输入框
-        await page.fill('input[name="password"]', PROMPTLAYER_PASSWORD)  # 密码输入框
+        # await page.fill('input[name="email"]', PROMPTLAYER_EMAIL)  # 邮箱输入框
+        # await page.fill('input[name="password"]', PROMPTLAYER_PASSWORD)  # 密码输入框
         
         # 提交登录表单
         await page.click('button[type="submit"]')  # 登录按钮
         email = await page.evaluate(
             """(email) => {
-                //document.querySelector("#email") && (document.querySelector("#email").value=email)
+                document.querySelector("#email") && (document.querySelector("#email").value=email)
                 return document.querySelector("#email")?.value
             }""",
             PROMPTLAYER_EMAIL
         )
         password = await page.evaluate(
             """(password) => {
-                //document.querySelector("#password") && (document.querySelector("#password").value=password)
+                document.querySelector("#password") && (document.querySelector("#password").value=password)
                 return document.querySelector("#password")?.value
             }""",
             PROMPTLAYER_PASSWORD
