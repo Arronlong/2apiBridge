@@ -76,23 +76,35 @@ async def get_promptlayer_token() -> str | None:
         # 1. 打开登录页
         await page.goto("https://dashboard.promptlayer.com/login", timeout=60000)
 
-        # 2. 填表单
-        # await page.fill('input[name="email"]', PROMPTLAYER_EMAIL)
-        # await page.fill('input[name="password"]', PROMPTLAYER_PASSWORD)
+        # 2. 等邮箱输入框
+        email = page.locator('input[name="email"], input[id="email"]')
+        await email.first.wait_for(state="visible", timeout=30000)
+        await email.first.fill(PROMPTLAYER_EMAIL)
 
-        # 2. 等邮箱输入框出现
-        email_box = page.locator('input[name="email"], input[id="email"]')
-        await email_box.first.wait_for(state="visible", timeout=30000)
-        
-        # 3. 填账号密码
-        await email_box.first.fill(PROMPTLAYER_EMAIL)
-        await page.locator('input[type="password"]').fill(PROMPTLAYER_PASSWORD)
+        # 3. 密码
+        pwd = page.locator('input[type="password"]')
+        await pwd.wait_for(state="visible")
+        await pwd.fill(PROMPTLAYER_PASSWORD)
 
         # 3. 点击登录按钮（根据实际页面 selector 微调）
-        await page.click('button[type="submit"]')
+        # await page.click('button[type="submit"]')
+        
+        # 4. 登录按钮（模糊匹配）
+        login_btn = page.locator('button:text("Login")')
+        await login_btn.wait_for(state="visible", timeout=30000)
+        await login_btn.click()
 
         # 4. 等待登录成功
-        await page.locator('h1:text("Welcome to PromptLayer")').wait_for(timeout=60000)
+        try:
+            await page.locator('h1:text("Welcome to PromptLayer")').wait_for(timeout=60000)
+        except TimeoutError:
+            print("当前 URL:", page.url)
+            html = await page.content()
+            print("【登录失败】当前 URL:", url)
+            print("【页面源码】")
+            # 只打印前 5 万字符，防止刷屏
+            print(textwrap.shorten(html, width=50_000, placeholder="..."))
+            return None
 
         # 5. 从 localStorage 拿 ACCESS_TOKEN
         token = await page.evaluate("""() => {
