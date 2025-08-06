@@ -72,44 +72,23 @@ async def get_promptlayer_token() -> str | None:
         raise RuntimeError("请先设置环境变量 PROMPTLAYER_EMAIL 和 PROMPTLAYER_PASSWORD")
 
     async with AsyncCamoufox(os="linux", headless=True) as browser:
+        # 导航到登录页面
         page = await browser.new_page()
-        # 1. 打开登录页
         await page.goto("https://dashboard.promptlayer.com/login", timeout=60000)
-
-        # 2. 等邮箱输入框
-        email = page.locator('input[name="email"], input[id="email"]')
-        await email.first.wait_for(state="visible", timeout=30000)
-        await email.first.fill(PROMPTLAYER_EMAIL)
-
-        # 3. 密码
-        pwd = page.locator('input[type="password"]')
-        await pwd.wait_for(state="visible")
-        await pwd.fill(PROMPTLAYER_PASSWORD)
-
-        # 3. 点击登录按钮（根据实际页面 selector 微调）
-        # await page.click('button[type="submit"]')
         
-        # 4. 登录按钮（模糊匹配）
-        login_btn = page.locator('button:text("Login")')
-        await login_btn.wait_for(state="visible", timeout=30000)
-        await login_btn.click()
-
-        # 4. 等待登录成功
-        try:
-            await page.locator('h1:text("Welcome to PromptLayer")').wait_for(timeout=60000)
-        except TimeoutError:
-            print("当前 URL:", page.url)
-            html = await page.content()
-            print("【页面源码】")
-            # 只打印前 5 万字符，防止刷屏
-            print(textwrap.shorten(html, width=50_000, placeholder="..."))
-            return None
-
-        # 5. 从 localStorage 拿 ACCESS_TOKEN
-        token = await page.evaluate("""() => {
-            return localStorage.getItem('ACCESS_TOKEN');
-        }""")
-
+        # 填写登录表单（根据实际页面元素调整选择器）
+        await page.fill('input[name="email"]', PROMPTLAYER_EMAIL)  # 邮箱输入框
+        await page.fill('input[name="password"]', PROMPTLAYER_PASSWORD)  # 密码输入框
+        
+        # 提交登录表单
+        await page.click('button[type="submit"]')  # 登录按钮
+        
+        # 等待登录完成（检测重定向或关键元素）
+        await page.wait_for_url("https://dashboard.promptlayer.com/**", timeout=30000)
+        
+        # 直接从localStorage获取ACCESS_TOKEN
+        token = await page.evaluate('() => localStorage.getItem("ACCESS_TOKEN")')
+        
         if token:
             print("ACCESS_TOKEN:", token)
             return token
