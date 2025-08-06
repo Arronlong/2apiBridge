@@ -22,11 +22,11 @@ def verify_api_key(req):
     """验证 API 密钥"""
     authorization = req.headers.get('Authorization')
     if not authorization or not VALID_API_KEY:
-        return Response(json.dumps({'error': 'Missing API key'}), status=401, mimetype='application/json')
+        return Response(json.dumps({'error': 'Missing API key'}), status_code=401, mimetype='application/json')
 
     api_key = authorization.replace('Bearer ', '').strip()
     if api_key != VALID_API_KEY:
-        return Response(json.dumps({'error': 'Invalid API key'}), status=401, mimetype='application/json')
+        return Response(json.dumps({'error': 'Invalid API key'}), status_code=401, mimetype='application/json')
 
     return None
 
