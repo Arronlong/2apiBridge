@@ -99,6 +99,8 @@ async def get_promptlayer_token() -> str | None:
             # 检查源码中是否包含欢迎文本[5][6][10]
             if "Welcome to PromptLayer" in page_content:
                 print("✅ 登录成功：在源码中找到欢迎文本")
+            elif "Log In" in page_content:
+                print("❌ 未触发登录？还在Login页面")
             else:
                 print("❌ 登录失败：未找到欢迎元素")
 
