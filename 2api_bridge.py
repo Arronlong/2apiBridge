@@ -94,9 +94,9 @@ async def get_promptlayer_token() -> str | None:
             PROMPTLAYER_EMAIL
         )
         password = await page.evaluate(
-            """(email) => {
-                document.querySelector("#password") && (document.querySelector("#password").value=email)
-                return document.querySelector("#email")?.value
+            """(password) => {
+                document.querySelector("#password") && (document.querySelector("#password").value=password)
+                return document.querySelector("#password")?.value
             }""",
             PROMPTLAYER_PASSWORD
         )
