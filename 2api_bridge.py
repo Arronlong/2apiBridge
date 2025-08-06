@@ -77,8 +77,16 @@ async def get_promptlayer_token() -> str | None:
         await page.goto("https://dashboard.promptlayer.com/login", timeout=60000)
 
         # 2. 填表单
-        await page.fill('input[name="email"]', PROMPTLAYER_EMAIL)
-        await page.fill('input[name="password"]', PROMPTLAYER_PASSWORD)
+        # await page.fill('input[name="email"]', PROMPTLAYER_EMAIL)
+        # await page.fill('input[name="password"]', PROMPTLAYER_PASSWORD)
+
+        # 2. 等邮箱输入框出现
+        email_box = page.locator('input[name="email"], input[id="email"]')
+        await email_box.first.wait_for(state="visible", timeout=30000)
+        
+        # 3. 填账号密码
+        await email_box.first.fill(PROMPTLAYER_EMAIL)
+        await page.locator('input[type="password"]').fill(PROMPTLAYER_PASSWORD)
 
         # 3. 点击登录按钮（根据实际页面 selector 微调）
         await page.click('button[type="submit"]')
