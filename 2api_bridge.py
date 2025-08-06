@@ -89,6 +89,9 @@ async def get_promptlayer_token() -> str | None:
             PROMPTLAYER_EMAIL,
             delay=100  # 每个字符输入间隔100ms（模拟真实输入）
         )
+        
+        # 点击输入框聚焦
+        await page.click('input[name="password"]', force=True)
         await page.type(
             'input[name="password"]', 
             PROMPTLAYER_PASSWORD,
