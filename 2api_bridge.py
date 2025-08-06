@@ -74,11 +74,11 @@ async def get_promptlayer_token() -> str | None:
     async with AsyncCamoufox(os="linux", headless=True) as browser:
         # 导航到登录页面
         page = await browser.new_page()
-        await page.goto("https://dashboard.promptlayer.com/login", timeout=60000)
+        await page.goto("https://dashboard.promptlayer.com/login", timeout=30000)
 
         # 显式等待元素可见（增加超时容错）
-        await page.wait_for_selector("input[name='email']", state="visible", timeout=15000)
-        await page.wait_for_selector("input[name='password']", state="visible", timeout=15000)
+        await page.wait_for_selector("input[name='email']", state="visible", timeout=5000)
+        await page.wait_for_selector("input[name='password']", state="visible", timeout=5000)
 
         # 填写登录表单（根据实际页面元素调整选择器）
         await page.fill('input[name="email"]', PROMPTLAYER_EMAIL)  # 邮箱输入框
@@ -86,18 +86,24 @@ async def get_promptlayer_token() -> str | None:
         
         # 提交登录表单
         await page.click('button[type="submit"]')  # 登录按钮
+        await page.evaluate(
+            """(email) => document.querySelector("#email").value=email;""",
+            PROMPTLAYER_EMAIL
+        )
+        await page.evaluate(
+            """(pwd) => document.querySelector("#password").value=pwd;""",
+            PROMPTLAYER_PASSWORD
+        )
         await page.evaluate('() => document.querySelector("button[type=submit]")?.click()')
+        await asyncio.sleep(3)  # 预留响应时间
         
         # 等待登录完成（检测重定向或关键元素）
         try:
-            await page.wait_for_selector("h1:has-text('Welcome to PromptLayer')", state="visible", timeout=30000)
+            await page.wait_for_selector("h1:has-text('Welcome to PromptLayer')", state="visible", timeout=3000)
         except:
-            # 方案二：通过API验证邮箱（双保险机制）
-            await asyncio.sleep(5)  # 预留API响应时间
             # 获取整个页面的HTML源码
             page_content = await page.content()
-            
-            # 检查源码中是否包含欢迎文本[5][6][10]
+            # 检查源码中是否包含欢迎文本
             if "Welcome to PromptLayer" in page_content:
                 print("✅ 登录成功：在源码中找到欢迎文本")
             elif "Log In" in page_content:
