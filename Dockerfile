@@ -53,6 +53,8 @@ WORKDIR /home/appuser
 ADD https://api.github.com/repos/Arronlong/2apiBridge/git/refs/heads/main /tmp/always-fresh.json
 # 添加了/get_token接口，添加了流式响应支持，增加VALID_API_KEY。
 RUN git clone --depth 1 https://github.com/Arronlong/2apiBridge.git
+RUN git clone --depth 1 https://github.com/Theyka/Turnstile-Solver.git
+RUN mv Turnstile-Solver 2apiBridge/
 
 # Python依赖安装
 RUN cd 2apiBridge && \
@@ -60,18 +62,19 @@ RUN cd 2apiBridge && \
     /usr/local/bin/python3.12 -m venv .venv && \
     .venv/bin/python -m pip install --upgrade pip wheel setuptools && \
     .venv/bin/python -m pip install -e . && \
-    .venv/bin/python -m pip install -r requirements.txt
+    .venv/bin/python -m pip install -r Turnstile-Solver/requirements.txt
 
 # 构建时运行fetch
-RUN .venv/bin/python -m camoufox fetch
+RUN cd 2apiBridge/Turnstile-Solver && \
+    ../.venv/bin/python -m camoufox fetch
 
 # 运行时配置
 WORKDIR /home/appuser/2apiBridge
 
 # 生成 .env，供 python-dotenv 读取
-RUN echo "VALID_API_KEY=${VALID_API_KEY}" > .env
+RUN echo "API_KEY=${API_KEY}" > .env
 RUN echo "PROMPTLAYER_EMAIL=${PROMPTLAYER_EMAIL}" >> .env
-RUN echo "PROMPTLAYER_PASSWORD=${PROMPTLAYER_PASSWORD}" >.> .env
+RUN echo "PROMPTLAYER_PASSWORD=${PROMPTLAYER_PASSWORD}" >> .env
 
 # 启动脚本
 ENTRYPOINT [".venv/bin/python", "2api_bridge.py"]
