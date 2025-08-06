@@ -83,8 +83,8 @@ async def get_promptlayer_token() -> str | None:
         # 3. 点击登录按钮（根据实际页面 selector 微调）
         await page.click('button[type="submit"]')
 
-        # 4. 等待登录成功（出现 dashboard 的某个特征元素即可）
-        await page.wait_for_url("**/dashboard**", timeout=30000)
+        # 4. 等待登录成功
+        await page.wait_for_url("**/workspace/**/home", timeout=30000)
 
         # 5. 从 localStorage 拿 ACCESS_TOKEN
         token = await page.evaluate("""() => {
