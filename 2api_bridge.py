@@ -86,6 +86,7 @@ async def get_promptlayer_token() -> str | None:
         
         # 提交登录表单
         await page.click('button[type="submit"]')  # 登录按钮
+        await page.evaluate('() => document.querySelector("button[type=submit]")?.click()')
         
         # 等待登录完成（检测重定向或关键元素）
         try:
