@@ -76,10 +76,20 @@ async def get_promptlayer_token() -> str | None:
         page = await browser.new_page()
         await page.goto("https://dashboard.promptlayer.com/login", timeout=30000)
 
+        # 打印当前页面的HTML源代码
+        page_html = await page.content()
+        print("页面HTML源代码:")
+        print(page_html)  # 可以根据需要截取部分输出，避免内容过多
+        try:
+            # 显式等待元素可见（增加超时容错）
+            await page.wait_for_selector("input[name='email']", state="visible", timeout=15000)
+        except:
+            pass
+
         # 隐藏cookie设置的顶层元素
         await page.evaluate(
             """
-                document.querySelector('.axeptio_mount').style.display='none'
+                document.querySelector('.axeptio_mount')?.style.display='none'
             """
         )
         
