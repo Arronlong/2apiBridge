@@ -149,7 +149,11 @@ async def get_promptlayer_token() -> str | None:
         await page.click('input[name="email"]', force=True)
         await page.click('input[name="password"]', force=True)
         
-        await page.evaluate('() => document.querySelector("button[type=submit]")?.click()')
+        # 触发登录
+        await page.evaluate('() => {
+            document.querySelector("button[type=submit]")?.click();
+            document.querySelector("#password")?.parentElement?.parentElement?.parentElement?.querySelector("button.w-full").click();
+        }')
         await asyncio.sleep(3)  # 预留响应时间
         
         
@@ -172,7 +176,11 @@ async def get_promptlayer_token() -> str | None:
                     content = content + "Password is required!"
                 print(content)
                 print("===二次触发登录===")
-                await page.evaluate('() => document.querySelector("button[type=submit]")?.click()')
+                # 触发登录
+                await page.evaluate('() => {
+                    document.querySelector("button[type=submit]")?.click();
+                    document.querySelector("#password")?.parentElement?.parentElement?.parentElement?.querySelector("button.w-full").click();
+                }')
                 await asyncio.sleep(3)  # 预留响应时间
             else:
                 print("❌ 登录失败：未找到欢迎元素")
@@ -210,11 +218,18 @@ async def get_sophnet_newtoken_api(response: Response, request: Request):
     auth_error = verify_api_key(request)
     if auth_error:
         return auth_error
+    
     global sophnet_token_list
-    sophnet_token_list.clear()
-    response.status_code = status.HTTP_302_FOUND
-    response.headers["Location"] = "/sophnet/get_token"
-    return
+    try:
+        new_token = await get_sophnet_token()
+        if new_token:
+            sophnet_token_list.clear()
+            sophnet_token_list.append(new_token)
+            return {"token": new_token, "status": "success", "message": "Token refreshed successfully"}
+        else:
+            return {"error": "Failed to get new token", "status": "failed"}
+    except Exception as e:
+        return {"error": f"Error getting new token: {str(e)}", "status": "failed"}
 
 @app.get("/promptlayer/get_token")
 async def get_promptlayer_token_api(request: Request):
@@ -235,11 +250,18 @@ async def get_promptlayer_newtoken_api(response: Response, request: Request):
     auth_error = verify_api_key(request)
     if auth_error:
         return auth_error
+    
     global promptlayer_token_list
-    promptlayer_token_list.clear()
-    response.status_code = status.HTTP_302_FOUND
-    response.headers["Location"] = "/promptlayer/get_token"
-    return
+    try:
+        new_token = await get_promptlayer_token()
+        if new_token:
+            promptlayer_token_list.clear()
+            promptlayer_token_list.append(new_token)
+            return {"token": new_token, "status": "success", "message": "Token refreshed successfully"}
+        else:
+            return {"error": "Failed to get new token", "status": "failed"}
+    except Exception as e:
+        return {"error": f"Error getting new token: {str(e)}", "status": "failed"}
 
 def main():
     uvicorn.run("2api_bridge:app", host="0.0.0.0", port=10007, reload=True)
