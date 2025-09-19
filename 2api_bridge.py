@@ -76,6 +76,13 @@ async def get_promptlayer_token() -> str | None:
         page = await browser.new_page()
         await page.goto("https://dashboard.promptlayer.com/login", timeout=30000)
 
+        # 隐藏cookie设置的顶层元素
+        await page.evaluate(
+            """
+                document.querySelector('.axeptio_mount').style.display='none'
+            """
+        )
+        
         # 显式等待元素可见（增加超时容错）
         await page.wait_for_selector("input[name='email']", state="visible", timeout=15000)
         await page.wait_for_selector("input[name='password']", state="visible", timeout=15000)
