@@ -152,6 +152,8 @@ async def get_promptlayer_token() -> str | None:
         await page.evaluate('() => document.querySelector("button[type=submit]")?.click()')
         await asyncio.sleep(3)  # 预留响应时间
         
+        
+        
         # 等待登录完成（检测重定向或关键元素）
         try:
             await page.wait_for_selector("h1:has-text('Welcome to PromptLayer')", state="visible", timeout=3000)
@@ -169,8 +171,12 @@ async def get_promptlayer_token() -> str | None:
                 if "Password is required" in page_content:
                     content = content + "Password is required!"
                 print(content)
+                print("===二次触发登录===")
+                await page.evaluate('() => document.querySelector("button[type=submit]")?.click()')
+                await asyncio.sleep(3)  # 预留响应时间
             else:
                 print("❌ 登录失败：未找到欢迎元素")
+                print(page_content)
 
         # 直接从localStorage获取ACCESS_TOKEN
         token = await page.evaluate('() => localStorage.getItem("ACCESS_TOKEN")')
