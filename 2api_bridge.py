@@ -133,9 +133,10 @@ async def get_promptlayer_token() -> str | None:
         # 点击输入框聚焦
         await page.click('input[name="email"]', force=True)
         await page.click('input[name="password"]', force=True)
+        
         # 提交登录表单
-        # await page.click('button[type="submit"]')  # 登录按钮
-        # await asyncio.sleep(3)  # 预留响应时间
+        await page.click('button[type="submit"]')  # 登录按钮
+        await asyncio.sleep(3)  # 预留响应时间
         
         email = await page.evaluate(
             """(email) => {
@@ -158,10 +159,10 @@ async def get_promptlayer_token() -> str | None:
         await page.click('input[name="password"]', force=True)
         
         # 触发登录
-        await page.evaluate("""() => {
+        await page.evaluate("""
             document.querySelector("button[type=submit]")?.click();
             document.querySelector("#password")?.parentElement?.parentElement?.parentElement?.querySelector("button.w-full").click();
-        }""")
+        """)
         await asyncio.sleep(3)  # 预留响应时间
         
         
@@ -185,10 +186,10 @@ async def get_promptlayer_token() -> str | None:
                 print(content)
                 print("===二次触发登录===")
                 # 触发登录
-                await page.evaluate("""() => {
+                await page.evaluate("""
                     document.querySelector("button[type=submit]")?.click();
                     document.querySelector("#password")?.parentElement?.parentElement?.parentElement?.querySelector("button.w-full").click();
-                }""")
+                """)
                 await asyncio.sleep(3)  # 预留响应时间
             else:
                 print("❌ 登录失败：未找到欢迎元素")
