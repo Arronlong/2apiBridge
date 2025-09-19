@@ -104,19 +104,28 @@ async def get_promptlayer_token() -> str | None:
         await page.wait_for_selector("input[name='email']", state="visible", timeout=15000)
         await page.wait_for_selector("input[name='password']", state="visible", timeout=15000)
         
+        # 隐藏cookie设置的顶层元素
+        await page.evaluate("""
+            // 先获取元素，存在则隐藏
+            const cookieElement = document.querySelector('.axeptio_mount');
+            if (cookieElement) {
+                cookieElement.style.display = 'none';
+            }
+        """)
+        
         # 点击输入框聚焦
-        await page.click('input[name="email"]', force=True)
+        await page.click("input[name='email']", force=True)
         # 模拟真实键盘输入（含输入延迟）
         await page.type(
-            'input[name="email"]', 
+            "input[name='email']", 
             PROMPTLAYER_EMAIL,
             delay=100  # 每个字符输入间隔100ms（模拟真实输入）
         )
         
         # 点击输入框聚焦
-        await page.click('input[name="password"]', force=True)
+        await page.click("input[name='password']", force=True)
         await page.type(
-            'input[name="password"]', 
+            "input[name='password']", 
             PROMPTLAYER_PASSWORD,
             delay=100  # 每个字符输入间隔100ms（模拟真实输入）
         )
@@ -125,9 +134,8 @@ async def get_promptlayer_token() -> str | None:
         await page.click('input[name="email"]', force=True)
         await page.click('input[name="password"]', force=True)
         # 提交登录表单
-        await page.click('button[type="submit"]')  # 登录按钮
-        
-        await asyncio.sleep(3)  # 预留响应时间
+        # await page.click('button[type="submit"]')  # 登录按钮
+        # await asyncio.sleep(3)  # 预留响应时间
         
         email = await page.evaluate(
             """(email) => {
